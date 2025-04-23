@@ -1,14 +1,18 @@
+import 'express-async-errors'
 import 'dotenv/config'; 
 import express from 'express';
 import doctorRouter from './routes/doctorRouter';
 import patientRouter from './routes/patientRoutes';
 import { AppDataSource } from './config/dataSource';
+import { errorHandler } from './middlewares/errorHandlerMiddleware';
 
 const app = express();
 app.use(express.json());
 
 app.use('/doctor', doctorRouter);
-app.use('/patient', patientRouter)
+app.use('/patient', patientRouter);
+
+app.use(errorHandler);
 
 AppDataSource.initialize()
   .then(() => {

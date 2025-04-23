@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { createPatientSchema } from "../dtos/CreatePatientDto";
+import { BadRequestError } from "../helpers/api-erros";
 import { 
   createPatient,
   getPatient,
@@ -8,62 +10,49 @@ import {
 } from "../repositories/patientRepository";
 
 export const createPatientHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { name, cpf, birthDate, health_insurance } = req.body;
+  const result = createPatientSchema.safeParse(req.body);
 
-    const newDoctor = await createPatient(name, cpf, new Date(birthDate), health_insurance);
-    res.status(201).json(newDoctor);
-  } catch (error) {
-    next(error);
+  if (!result.success) {
+    const errorMessages = result.error.errors.map((err: any) => err.message).join(", ");
+    throw new BadRequestError(errorMessages);
   }
+
+  const { name, cpf, birthDate, health_insurance } = result.data;
+
+  const newDoctor = await createPatient(name, cpf, new Date(birthDate), health_insurance);
+  res.status(201).json(newDoctor);
 };
 
 export const getPatientsHandler = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const doctors = await getPatient();
-    res.status(200).json(doctors);
-  } catch (error) {
-    next(error);
-  }
+  const doctors = await getPatient();
+  res.status(200).json(doctors);
 };
 
 export const getPatientByIdHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const doctor = await getPatientById(id);
-    res.status(200).json(doctor);
-  } catch (error) {
-    next(error);
-  }
+  const doctor = await getPatientById(id);
+  res.status(200).json(doctor);
 };
 
 export const updatePatientHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const { name, cpf, birthDate, health_insurance } = req.body;
+  const { id } = req.params;
+  const { name, cpf, birthDate, health_insurance } = req.body;
 
-    const updatedDoctor = await updatePatient(
-      id,
-      name,
-      cpf,
-      birthDate ? new Date(birthDate) : undefined,
-      health_insurance
-    );
+  const updatedDoctor = await updatePatient(
+    id,
+    name,
+    cpf,
+    birthDate ? new Date(birthDate) : undefined,
+    health_insurance
+  );
 
-    res.status(200).json(updatedDoctor);
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json(updatedDoctor);
 };
 
 export const deletePatientHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    await deletePatient(id);
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
+  await deletePatient(id);
+  res.status(204).send();
 };

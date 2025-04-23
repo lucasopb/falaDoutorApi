@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/dataSource";
 import { Doctor } from "../entities/Doctor";
+import { NotFoundError } from "../helpers/api-erros";
 
 const doctorRepository = AppDataSource.getRepository(Doctor);
 
@@ -18,7 +19,10 @@ export const getDoctors = async () => {
 };
 
 export const getDoctorById = async (id: string) => {
-  return await doctorRepository.findOne({ where: { id } });
+  const doctor = await doctorRepository.findOne({ where: { id } });
+  if (!doctor) throw new NotFoundError("Doctor not found")
+
+  return doctor
 };
 
 export const updateDoctor = async (
@@ -29,7 +33,6 @@ export const updateDoctor = async (
   birthDate?: Date
 ) => {
   const doctor = await getDoctorById(id);
-  if (!doctor) throw new Error("Doctor not found");
 
   doctor.name = name ?? doctor.name;
   doctor.cpf = cpf ?? doctor.cpf;
@@ -40,8 +43,5 @@ export const updateDoctor = async (
 };
 
 export const deleteDoctor = async (id: string) => {
-  const doctor = await getDoctorById(id);
-  if (!doctor) throw new Error("Doctor not found");
-
   return await doctorRepository.delete(id);
 };

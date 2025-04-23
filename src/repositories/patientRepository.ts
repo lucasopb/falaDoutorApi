@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/dataSource";
 import { Patient } from "../entities/Patient";
+import { NotFoundError } from "../helpers/api-erros";
 
 const patientRepository = AppDataSource.getRepository(Patient)
 
@@ -18,7 +19,10 @@ export const getPatient = async () => {
 };
 
 export const getPatientById = async (id: string) => {
-  return await patientRepository.findOne({ where: { id } });
+  const patient = await patientRepository.findOne({ where: { id } });
+  if (!patient) throw new NotFoundError("Patient not found")
+  
+  return patient
 };
 
 export const updatePatient = async (
@@ -29,7 +33,6 @@ export const updatePatient = async (
   health_insurance?: string,
 ) => {
   const patient = await getPatientById(id);
-  if (!patient) throw new Error("Patient not found");
 
   patient.name = name ?? patient.name;
   patient.cpf = cpf ?? patient.cpf;
@@ -40,8 +43,5 @@ export const updatePatient = async (
 };
 
 export const deletePatient = async (id: string) => {
-  const patient = await getPatientById(id);
-  if (!patient) throw new Error("Patient not found");
-
   return await patientRepository.delete(id);
 };
