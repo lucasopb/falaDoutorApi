@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { createPatientSchema } from "../dtos/CreatePatientDto";
+import { createPatientSchema } from "../validators/CreatePatientSchema";
+import { updatePatientSchema } from "../validators/updatePatientSchema";
 import { BadRequestError } from "../helpers/api-erros";
 import { 
   createPatient,
@@ -10,14 +11,14 @@ import {
 } from "../repositories/patientRepository";
 
 export const createPatientHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const result = createPatientSchema.safeParse(req.body);
+  const validPatient = createPatientSchema.safeParse(req.body);
 
-  if (!result.success) {
-    const errorMessages = result.error.errors.map((err: any) => err.message).join(", ");
+  if (!validPatient.success) {
+    const errorMessages = validPatient.error.errors.map((err: any) => err.message).join(", ");
     throw new BadRequestError(errorMessages);
   }
 
-  const { name, cpf, birthDate, health_insurance } = result.data;
+  const { name, cpf, birthDate, health_insurance } = validPatient.data;
 
   const newDoctor = await createPatient(name, cpf, new Date(birthDate), health_insurance);
   res.status(201).json(newDoctor);
@@ -36,8 +37,16 @@ export const getPatientByIdHandler = async (req: Request, res: Response, next: N
 };
 
 export const updatePatientHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { id } = req.params;
-  const { name, cpf, birthDate, health_insurance } = req.body;
+  const validPatient = updatePatientSchema.safeParse(req.body);
+  if (!validPatient.success) {
+    const errorMessages = validPatient.error.errors
+      .map((err: any) => `${err.path.join('.')}: ${err.message}`)
+      .join(', ');
+    throw new BadRequestError(errorMessages);
+  }
+
+  const { id } = req.params
+  const { name, cpf, birthDate, health_insurance} = validPatient.data
 
   const updatedDoctor = await updatePatient(
     id,
