@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/", createDoctorHandler);
 router.get("/", getDoctorsHandler);
-router.get("/:id", getDoctorByIdHandler);
+router.get("/search/:id", getDoctorByIdHandler);
 router.put("/:id", updateDoctorHandler);
 router.delete("/:id", deleteDoctorHandler);
 

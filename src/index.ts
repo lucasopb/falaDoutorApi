@@ -1,5 +1,6 @@
 import 'express-async-errors'
 import 'dotenv/config'; 
+import cors from "cors"
 import express from 'express';
 import doctorRouter from './routes/doctorRouter';
 import patientRouter from './routes/patientRoutes';
@@ -7,6 +8,12 @@ import { AppDataSource } from './config/dataSource';
 import { errorHandler } from './middlewares/errorHandlerMiddleware';
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:3001",  
+  credentials: true,  
+}));
+
 app.use(express.json());
 
 app.use('/doctor', doctorRouter);
@@ -23,6 +30,6 @@ AppDataSource.initialize()
   });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(3000, "0.0.0.0", () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
