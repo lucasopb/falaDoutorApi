@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createPatientSchema } from "../validators/CreatePatientSchema";
+import { createPatientSchema } from "../validators/createPatientSchema";
 import { updatePatientSchema } from "../validators/updatePatientSchema";
 import { BadRequestError } from "../helpers/api-erros";
 import { 
@@ -18,9 +18,9 @@ export const createPatientHandler = async (req: Request, res: Response, next: Ne
     throw new BadRequestError(errorMessages);
   }
 
-  const { name, cpf, birthDate, health_insurance } = validPatient.data;
+  const { name, cpf, birthDate, healthInsurance } = validPatient.data;
 
-  const newDoctor = await createPatient(name, cpf, new Date(birthDate), health_insurance);
+  const newDoctor = await createPatient(name, cpf, new Date(birthDate), healthInsurance);
   res.status(201).json(newDoctor);
 };
 
@@ -46,14 +46,14 @@ export const updatePatientHandler = async (req: Request, res: Response, next: Ne
   }
 
   const { id } = req.params
-  const { name, cpf, birthDate, health_insurance} = validPatient.data
+  const { name, cpf, birthDate, healthInsurance} = validPatient.data
 
   const updatedDoctor = await updatePatient(
     id,
     name,
     cpf,
     birthDate ? new Date(birthDate) : undefined,
-    health_insurance
+    healthInsurance
   );
 
   res.status(200).json(updatedDoctor);

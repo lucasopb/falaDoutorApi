@@ -16,10 +16,10 @@ export const createPatientSchema = z.object({
     invalid_type_error: "'birthDate' must be a valid date.",
   }),
 
-  health_insurance: z.string({
-    required_error: "'health_insurance' field is required.",
-    invalid_type_error: "'health_insurance' must be a string.",
-  }).min(1, "'health_insurance' cannot be empty."),
+  healthInsurance: z.string({
+    required_error: "'healthInsurance' field is required.",
+    invalid_type_error: "'healthInsurance' must be a string.",
+  }).min(1, "'healthInsurance' cannot be empty."),
 });
 
 export type CreatePatientDTO = z.infer<typeof createPatientSchema>;

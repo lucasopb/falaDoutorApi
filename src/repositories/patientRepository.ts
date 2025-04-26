@@ -8,9 +8,9 @@ export const createPatient = async (
     name: string,
     cpf: string,
     birthDate: Date,
-    health_insurance: string
+    healthInsurance: string
 ) => {
-    const newPatient = patientRepository.create({ name, cpf, birthDate, health_insurance });
+    const newPatient = patientRepository.create({ name, cpf, birthDate, healthInsurance });
     return await patientRepository.save(newPatient);
 }
 
@@ -30,14 +30,14 @@ export const updatePatient = async (
   name?: string,
   cpf?: string,
   birthDate?: Date,
-  health_insurance?: string,
+  healthInsurance?: string,
 ) => {
   const patient = await getPatientById(id);
 
   patient.name = name ?? patient.name;
   patient.cpf = cpf ?? patient.cpf;
   patient.birthDate = birthDate ?? patient.birthDate;
-  patient.health_insurance = health_insurance ?? patient.health_insurance;
+  patient.healthInsurance = healthInsurance ?? patient.healthInsurance;
 
   return await patientRepository.save(patient);
 };

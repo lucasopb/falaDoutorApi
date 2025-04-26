@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createDoctorSchema } from "../validators/CreateDoctorSchema";
+import { createDoctorSchema } from "../validators/createDoctorSchema";
 import { updateDoctorSchema } from "../validators/updateDoctorSchema";
 import { BadRequestError } from "../helpers/api-erros";
 import {

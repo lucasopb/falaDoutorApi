@@ -13,9 +13,9 @@ export const updatePatientSchema = z.object({
     invalid_type_error: "'birthDate' must be a valid date.",
   }).optional(),
 
-  health_insurance: z.string({
-    invalid_type_error: "'health_insurance' must be a string.",
-  }).min(1, "'health_insurance' cannot be empty.").optional(),
+  healthInsurance: z.string({
+    invalid_type_error: "'healthInsurance' must be a string.",
+  }).min(1, "'healthInsurance' cannot be empty.").optional(),
 });
 
 export type UpdatePatientDTO = z.infer<typeof updatePatientSchema>;

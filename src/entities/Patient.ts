@@ -15,5 +15,5 @@ export class Patient {
   birthDate!: Date;
 
   @Column()
-  health_insurance!: string;
+  healthInsurance!: string;
 }
