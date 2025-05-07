@@ -9,12 +9,12 @@ export const createDoctorSchema = z.object({
   cpf: z.string({
     required_error: "'cpf' field is required.",
     invalid_type_error: "'cpf' must be a string.",
-  }).min(11, "'cpf' must be at least 11 characters long."),
+  }).regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "'cpf' must be in the format 000.000.000-00."),
 
   crm: z.string({
     required_error: "'crm' field is required.",
     invalid_type_error: "'crm' must be a string.",
-  }).min(1, "'crm' cannot be empty."),
+  }).length(6, "'crm' must be exactly 6 characters long."),
 
   birthDate: z.coerce.date({
     required_error: "'birthDate' field is required.",

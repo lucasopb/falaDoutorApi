@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { HealthInsurance } from "./HealthInsurance";
 
 @Entity()
 export class Patient {
@@ -14,6 +15,7 @@ export class Patient {
   @Column()
   birthDate!: Date;
 
-  @Column()
-  healthInsurance!: string;
+  @ManyToOne(() => HealthInsurance, (insurance) => insurance.patients, { nullable: true, onDelete: "SET NULL" })
+  @JoinColumn({ name: "health_insurance_id" })
+  healthInsurance?: HealthInsurance | null;
 }

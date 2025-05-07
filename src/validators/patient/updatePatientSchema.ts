@@ -7,15 +7,15 @@ export const updatePatientSchema = z.object({
 
   cpf: z.string({
     invalid_type_error: "'cpf' must be a string.",
-  }).min(11, "'cpf' must be at least 11 characters long.").optional(),
+  }).regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "'cpf' must be in the format 000.000.000-00.").optional(),
 
   birthDate: z.coerce.date({
     invalid_type_error: "'birthDate' must be a valid date.",
   }).optional(),
 
-  healthInsurance: z.string({
-    invalid_type_error: "'healthInsurance' must be a string.",
-  }).min(1, "'healthInsurance' cannot be empty.").optional(),
+  healthInsuranceId: z.string({
+    invalid_type_error: "'healthInsuranceId' must be a string.",
+  }).uuid("'healthInsuranceId' must be a valid UUID.").nullable().optional(),
 });
 
 export type UpdatePatientDTO = z.infer<typeof updatePatientSchema>;

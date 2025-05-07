@@ -4,6 +4,7 @@ import cors from "cors"
 import express from 'express';
 import doctorRouter from './routes/doctorRouter';
 import patientRouter from './routes/patientRoutes';
+import healthInsuranceRouter from './routes/HealthInsuranceRouter'
 import { AppDataSource } from './config/dataSource';
 import { errorHandler } from './middlewares/errorHandlerMiddleware';
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/doctor', doctorRouter);
 app.use('/patient', patientRouter);
+app.use('/health-insurance', healthInsuranceRouter)
 
 app.use(errorHandler);
 

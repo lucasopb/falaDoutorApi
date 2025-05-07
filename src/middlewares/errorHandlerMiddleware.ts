@@ -7,6 +7,8 @@ export const errorHandler = (
   res: Response, 
   next: NextFunction
 ): void => {
+  console.error("Erro capturado:", err);
+
   const statusCode = err.statusCode ?? 500;
   const message = err.statusCode ? err.message : "Internal Server Error";
   res.status(statusCode).json({ message });
