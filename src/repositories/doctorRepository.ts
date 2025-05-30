@@ -45,3 +45,48 @@ export const updateDoctor = async (
 export const deleteDoctor = async (id: string) => {
   return await doctorRepository.delete(id);
 };
+
+export const filterDoctors = async (filters: {
+  name?: string;
+  cpf?: string;
+  crm?: string;
+  ageMin?: number;
+  ageMax?: number;
+}) => {
+  const query = doctorRepository.createQueryBuilder("doctor");
+
+  if (filters.name) {
+    query.andWhere("doctor.name ILIKE :name", { name: `%${filters.name}%` });
+  }
+
+  if (filters.cpf) {
+    query.andWhere("doctor.cpf = :cpf", { cpf: filters.cpf });
+  }
+
+  if (filters.crm) {
+    query.andWhere("doctor.crm = :crm", { crm: filters.crm });
+  }
+
+  if (filters.ageMin || filters.ageMax) {
+    const today = new Date();
+    const birthdateMax = filters.ageMin
+      ? new Date(today.getFullYear() - filters.ageMin, 11, 31)
+      : undefined;
+    const birthdateMin = filters.ageMax
+      ? new Date(today.getFullYear() - filters.ageMax, 0, 1)
+      : undefined;
+
+    if (birthdateMin && birthdateMax) {
+      query.andWhere("doctor.birthDate BETWEEN :birthdateMin AND :birthdateMax", {
+        birthdateMin,
+        birthdateMax,
+      });
+    } else if (birthdateMin) {
+      query.andWhere("doctor.birthDate >= :birthdateMin", { birthdateMin });
+    } else if (birthdateMax) {
+      query.andWhere("doctor.birthDate <= :birthdateMax", { birthdateMax });
+    }
+  }
+
+  return await query.getMany();
+};

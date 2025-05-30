@@ -7,6 +7,7 @@ import patientRouter from './routes/patientRoutes';
 import healthInsuranceRouter from './routes/HealthInsuranceRouter'
 import { AppDataSource } from './config/dataSource';
 import { errorHandler } from './middlewares/errorHandlerMiddleware';
+import reportRouter from './routes/reportRouter'
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/doctor', doctorRouter);
 app.use('/patient', patientRouter);
 app.use('/health-insurance', healthInsuranceRouter)
+app.use('/report', reportRouter)
 
 app.use(errorHandler);
 
