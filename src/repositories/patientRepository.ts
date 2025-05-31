@@ -2,6 +2,7 @@ import { AppDataSource } from "../config/dataSource";
 import { Patient } from "../entities/Patient";
 import { NotFoundError } from "../helpers/api-erros";
 import { getHealthInsuranceById } from "./healthInsuranceRepository";
+import { convertAgeToBirthdate } from "../helpers/convert-age";
 
 const patientRepository = AppDataSource.getRepository(Patient)
 
@@ -93,18 +94,14 @@ export const filterPatients = async (filters: {
     query.andWhere('patient.health_insurance_id = :healthInsuranceId', { healthInsuranceId: filters.healthInsuranceId });
   }
 
-  if (filters.ageMin || filters.ageMax) {
-    const today = new Date();
-    const dateMin = filters.ageMax ? new Date(today.getFullYear() - filters.ageMax, 0, 1) : null;
-    const dateMax = filters.ageMin ? new Date(today.getFullYear() - filters.ageMin, 11, 31) : null;
+  const { birthdateMin, birthdateMax } = convertAgeToBirthdate(filters.ageMin, filters.ageMax);
 
-    if (dateMin && dateMax) {
-      query.andWhere('patient.birthDate BETWEEN :dateMin AND :dateMax', { dateMin, dateMax });
-    } else if (dateMin) {
-      query.andWhere('patient.birthDate <= :dateMin', { dateMin });
-    } else if (dateMax) {
-      query.andWhere('patient.birthDate >= :dateMax', { dateMax });
-    }
+  if (birthdateMin && birthdateMax) {
+    query.andWhere('patient.birthDate BETWEEN :birthdateMin AND :birthdateMax', { birthdateMin, birthdateMax });
+  } else if (birthdateMin) {
+    query.andWhere('patient.birthDate <= :birthdateMin', { birthdateMin });
+  } else if (birthdateMax) {
+    query.andWhere('patient.birthDate >= :birthdateMax', { birthdateMax });
   }
 
   return query.getMany();

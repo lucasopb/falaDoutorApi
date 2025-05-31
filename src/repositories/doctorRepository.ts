@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/dataSource";
 import { Doctor } from "../entities/Doctor";
 import { NotFoundError } from "../helpers/api-erros";
+import { convertAgeToBirthdate } from "../helpers/convert-age";
 
 const doctorRepository = AppDataSource.getRepository(Doctor);
 
@@ -67,25 +68,17 @@ export const filterDoctors = async (filters: {
     query.andWhere("doctor.crm = :crm", { crm: filters.crm });
   }
 
-  if (filters.ageMin || filters.ageMax) {
-    const today = new Date();
-    const birthdateMax = filters.ageMin
-      ? new Date(today.getFullYear() - filters.ageMin, 11, 31)
-      : undefined;
-    const birthdateMin = filters.ageMax
-      ? new Date(today.getFullYear() - filters.ageMax, 0, 1)
-      : undefined;
+  const { birthdateMin, birthdateMax } = convertAgeToBirthdate(filters.ageMin, filters.ageMax);
 
-    if (birthdateMin && birthdateMax) {
-      query.andWhere("doctor.birthDate BETWEEN :birthdateMin AND :birthdateMax", {
-        birthdateMin,
-        birthdateMax,
-      });
-    } else if (birthdateMin) {
-      query.andWhere("doctor.birthDate >= :birthdateMin", { birthdateMin });
-    } else if (birthdateMax) {
-      query.andWhere("doctor.birthDate <= :birthdateMax", { birthdateMax });
-    }
+  if (birthdateMin && birthdateMax) {
+    query.andWhere("doctor.birthDate BETWEEN :birthdateMin AND :birthdateMax", {
+      birthdateMin,
+      birthdateMax,
+    });
+  } else if (birthdateMin) {
+    query.andWhere("doctor.birthDate >= :birthdateMin", { birthdateMin });
+  } else if (birthdateMax) {
+    query.andWhere("doctor.birthDate <= :birthdateMax", { birthdateMax });
   }
 
   return await query.getMany();
