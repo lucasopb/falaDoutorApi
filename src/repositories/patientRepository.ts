@@ -29,10 +29,13 @@ export const createPatient = async (
   return await patientRepository.save(newPatient);
 };
 
-export const getPatient = async () => {
-  return await patientRepository.find({
-    relations: ["healthInsurance"],
+export const getPatients = async (limit: number, offset: number) => {
+  const [patients, total] = await patientRepository.findAndCount({
+    skip: offset,
+    take: limit,
   });
+
+  return { patients, total };
 };
 
 export const getPatientById = async (id: string) => {
@@ -73,13 +76,17 @@ export const deletePatient = async (id: string) => {
   return await patientRepository.delete(id);
 };
 
-export const filterPatients = async (filters: {
-  name?: string;
-  cpf?: string;
-  healthInsuranceId?: string;
-  ageMin?: number;
-  ageMax?: number;
-}) => {
+export const filterPatients = async (
+  filters: {
+    name?: string;
+    cpf?: string;
+    healthInsuranceId?: string;
+    ageMin?: number;
+    ageMax?: number;
+  },
+  limit: number,
+  offset: number
+) => {
   const query = patientRepository.createQueryBuilder("patient");
 
   if (filters.name) {
@@ -104,5 +111,10 @@ export const filterPatients = async (filters: {
     query.andWhere('patient.birthDate >= :birthdateMax', { birthdateMax });
   }
 
-  return query.getMany();
+  const [data, total] = await query
+    .skip(offset)
+    .take(limit)
+    .getManyAndCount();
+
+  return { data, total };
 }

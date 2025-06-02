@@ -4,7 +4,7 @@ import { updateHealthInsuranceSchema } from "../validators/healthInsurance/updat
 import { BadRequestError } from "../helpers/api-erros";
 import { 
   createHealthInsurance,
-  getHealthInsurance,
+  getHealthInsurances,
   getHealthInsuranceById,
   updateHealthInsurance,
   deleteHealthInsurance
@@ -36,12 +36,22 @@ export const createPatientHandler = async (
 };
 
 export const getHealthInsurancesHandler = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const healthInsurance = await getHealthInsurance();
-  res.status(200).json(healthInsurance);
+  const { page, limit, offset } = req.pagination!;
+  const { healthInsurances, total } = await getHealthInsurances(limit, offset);
+
+  res.status(200).json({
+    data: healthInsurances,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  })
 };
 
 export const getHealthInsuranceByIdHandler = async (

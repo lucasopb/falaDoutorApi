@@ -13,8 +13,13 @@ export const createHealthInsurance = async (
   return await healthInsuranceRepository.save(healthInsurance);
 };
 
-export const getHealthInsurance = async () => {
-  return await healthInsuranceRepository.find({ relations: ["patients"] });
+export const getHealthInsurances = async (limit: number, offset: number) => {
+  const [healthInsurances, total] = await healthInsuranceRepository.findAndCount({
+    skip: offset,
+    take: limit,
+  });
+
+  return { healthInsurances, total };
 };
 
 export const getHealthInsuranceById = async (id: string) => {
@@ -43,12 +48,16 @@ export const deleteHealthInsurance = async (id: string) => {
   return await healthInsuranceRepository.delete(id);
 };
 
-export const filterHealthInsurances = async (filters: {
-  name?: string;
-  code?: string;
-  baseValueMin?: number;
-  baseValueMax?: number;
-}) => {
+export const filterHealthInsurances = async (
+  filters: {
+    name?: string;
+    code?: string;
+    baseValueMin?: number;
+    baseValueMax?: number;
+  },
+  limit: number,
+  offset: number
+) => {
   const query = healthInsuranceRepository.createQueryBuilder('health_insurance');
 
   if (filters.name) {
@@ -67,5 +76,10 @@ export const filterHealthInsurances = async (filters: {
     query.andWhere('CAST(health_insurance.baseValue AS DECIMAL) <= :max', { max: filters.baseValueMax });
   }
 
-  return query.getMany();
+  const [data, total] = await query
+    .skip(offset)
+    .take(limit)
+    .getManyAndCount();
+
+  return { data, total };
 };

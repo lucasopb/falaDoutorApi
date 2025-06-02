@@ -15,8 +15,13 @@ export const createDoctor = async (
   return await doctorRepository.save(newDoctor);
 };
 
-export const getDoctors = async () => {
-  return await doctorRepository.find();
+export const getDoctors = async (limit: number, offset: number) => {
+  const [doctors, total] = await doctorRepository.findAndCount({
+    skip: offset,
+    take: limit,
+  });
+
+  return { doctors, total };
 };
 
 export const getDoctorById = async (id: string) => {
@@ -47,13 +52,17 @@ export const deleteDoctor = async (id: string) => {
   return await doctorRepository.delete(id);
 };
 
-export const filterDoctors = async (filters: {
-  name?: string;
-  cpf?: string;
-  crm?: string;
-  ageMin?: number;
-  ageMax?: number;
-}) => {
+export const filterDoctors = async (
+  filters: {
+    name?: string;
+    cpf?: string;
+    crm?: string;
+    ageMin?: number;
+    ageMax?: number;
+  }, 
+  limit: number,
+  offset: number
+) => {
   const query = doctorRepository.createQueryBuilder("doctor");
 
   if (filters.name) {
@@ -81,5 +90,10 @@ export const filterDoctors = async (filters: {
     query.andWhere("doctor.birthDate <= :birthdateMax", { birthdateMax });
   }
 
-  return await query.getMany();
+  const [data, total] = await query
+    .skip(offset)
+    .take(limit)
+    .getManyAndCount();
+
+  return { data, total };
 };

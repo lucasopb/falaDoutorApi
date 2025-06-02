@@ -4,7 +4,7 @@ import { updatePatientSchema } from "../validators/patient/updatePatientSchema";
 import { BadRequestError } from "../helpers/api-erros";
 import { 
   createPatient,
-  getPatient,
+  getPatients,
   getPatientById,
   updatePatient,
   deletePatient
@@ -37,12 +37,22 @@ export const createPatientHandler = async (
 };
 
 export const getPatientsHandler = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const patient = await getPatient();
-  res.status(200).json(patient);
+  const { page, limit, offset } = req.pagination!;
+  const { patients, total } = await getPatients(limit, offset);
+
+  res.status(200).json({
+    data: patients,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  })
 };
 
 export const getPatientByIdHandler = async (

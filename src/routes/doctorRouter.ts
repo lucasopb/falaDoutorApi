@@ -6,11 +6,13 @@ import {
   updateDoctorHandler,
   deleteDoctorHandler
 } from "../controllers/doctorController";
+import { paginate } from "../middlewares/pagination";
+
 
 const router = Router();
 
 router.post("/", createDoctorHandler);
-router.get("/", getDoctorsHandler);
+router.get("/", paginate, getDoctorsHandler);
 router.get("/:id", getDoctorByIdHandler);
 router.put("/:id", updateDoctorHandler);
 router.delete("/:id", deleteDoctorHandler);

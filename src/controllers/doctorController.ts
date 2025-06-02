@@ -37,12 +37,22 @@ export const createDoctorHandler = async (
 };
 
 export const getDoctorsHandler = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const doctors = await getDoctors();
-  res.status(200).json(doctors);
+  const { page, limit, offset } = req.pagination!;
+  const { doctors, total } = await getDoctors(limit, offset);
+
+  res.status(200).json({
+    data: doctors,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  })
 };
 
 export const getDoctorByIdHandler = async (

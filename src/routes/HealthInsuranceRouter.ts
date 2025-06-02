@@ -6,11 +6,12 @@ import {
   updateHealthInsuranceHandler,
   deleteHealthInsuranceHandler
 } from "../controllers/healthInsuranceController";
+import { paginate } from "../middlewares/pagination";
 
 const router = Router();
 
 router.post("/", createPatientHandler);
-router.get("/", getHealthInsurancesHandler);
+router.get("/", paginate, getHealthInsurancesHandler);
 router.get("/:id", getHealthInsuranceByIdHandler);
 router.put("/:id", updateHealthInsuranceHandler);
 router.delete("/:id", deleteHealthInsuranceHandler);
