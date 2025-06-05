@@ -33,7 +33,10 @@ export const getPatients = async (limit: number, offset: number) => {
   const [patients, total] = await patientRepository.findAndCount({
     skip: offset,
     take: limit,
-    relations: ['healthInsurance']
+    relations: ['healthInsurance'],
+    order: {
+      name: 'ASC'
+    }
   });
 
   return { patients, total };

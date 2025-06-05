@@ -17,7 +17,10 @@ export const getHealthInsurances = async (limit: number, offset: number) => {
   const [healthInsurances, total] = await healthInsuranceRepository.findAndCount({
     skip: offset,
     take: limit,
-    relations: ['patients']
+    relations: ['patients'],
+    order: {
+      name: 'ASC'
+    }
   });
 
   return { healthInsurances, total };

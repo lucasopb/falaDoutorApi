@@ -19,6 +19,9 @@ export const getDoctors = async (limit: number, offset: number) => {
   const [doctors, total] = await doctorRepository.findAndCount({
     skip: offset,
     take: limit,
+    order: {
+      name: 'ASC'
+    }
   });
 
   return { doctors, total };
