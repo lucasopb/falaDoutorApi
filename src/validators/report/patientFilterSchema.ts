@@ -10,8 +10,8 @@ export const patientFilterSchema = z.object({
   }).optional(),
 
   healthInsuranceId: z.string({
-    invalid_type_error: "'healthInsuranceId' must be a string.",
-  }).uuid("'healthInsuranceId' must be a valid UUID.").optional(),
+    invalid_type_error: "'healthInsuranceId' must be a string (UUID).",
+  }).optional(),
 
   ageMin: z.coerce.number({
     invalid_type_error: "'ageMin' must be a valid number.",

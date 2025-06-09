@@ -91,7 +91,9 @@ export const filterPatients = async (
   limit: number,
   offset: number
 ) => {
-  const query = patientRepository.createQueryBuilder("patient");
+  const query = patientRepository
+    .createQueryBuilder("patient")
+    .leftJoinAndSelect("patient.healthInsurance", "healthInsurance"); // JOIN com a tabela de convênios
 
   if (filters.name) {
     query.andWhere('patient.name ILIKE :name', { name: `%${filters.name}%` });
@@ -102,23 +104,25 @@ export const filterPatients = async (
   }
 
   if (filters.healthInsuranceId) {
-    query.andWhere('patient.health_insurance_id = :healthInsuranceId', { healthInsuranceId: filters.healthInsuranceId });
+    query.andWhere('healthInsurance.id = :healthInsuranceId', {
+      healthInsuranceId: filters.healthInsuranceId,
+    });
   }
 
   const { birthdateMin, birthdateMax } = convertAgeToBirthdate(filters.ageMin, filters.ageMax);
 
   if (birthdateMin && birthdateMax) {
-    query.andWhere('patient.birthDate BETWEEN :birthdateMin AND :birthdateMax', { birthdateMin, birthdateMax });
+    query.andWhere('patient.birthDate BETWEEN :birthdateMin AND :birthdateMax', {
+      birthdateMin,
+      birthdateMax,
+    });
   } else if (birthdateMin) {
     query.andWhere('patient.birthDate <= :birthdateMin', { birthdateMin });
   } else if (birthdateMax) {
     query.andWhere('patient.birthDate >= :birthdateMax', { birthdateMax });
   }
 
-  const [data, total] = await query
-    .skip(offset)
-    .take(limit)
-    .getManyAndCount();
+  const [data, total] = await query.skip(offset).take(limit).getManyAndCount();
 
   return { data, total };
-}
+};
