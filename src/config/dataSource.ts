@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { Doctor } from "../entities/Doctor";
 import { Patient } from "../entities/Patient";
 import { HealthInsurance } from "../entities/HealthInsurance";
+import { DoctorHealthInsurance } from "../entities/DoctorHealthInsurance";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: false,
-  entities: [Doctor, Patient, HealthInsurance],
+  entities: [Doctor, Patient, HealthInsurance, DoctorHealthInsurance],
   migrations: ["src/migrations/**/*.ts"],
 });
 

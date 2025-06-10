@@ -3,6 +3,7 @@ import 'dotenv/config';
 import cors from "cors"
 import express from 'express';
 import doctorRouter from './routes/doctorRouter';
+import doctorHealthInsuranceRouter from './routes/doctorHealthInsuranceRouter'
 import patientRouter from './routes/patientRoutes';
 import healthInsuranceRouter from './routes/HealthInsuranceRouter'
 import { AppDataSource } from './config/dataSource';
@@ -22,6 +23,7 @@ app.use('/doctor', doctorRouter);
 app.use('/patient', patientRouter);
 app.use('/health-insurance', healthInsuranceRouter)
 app.use('/report', reportRouter)
+app.use('/doctor-health-insurance', doctorHealthInsuranceRouter)
 
 app.use(errorHandler);
 

@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Patient } from "./Patient";
+import { DoctorHealthInsurance } from "./DoctorHealthInsurance";
 
 @Entity()
 export class HealthInsurance {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
@@ -17,4 +18,7 @@ export class HealthInsurance {
 
   @OneToMany(() => Patient, (patient) => patient.healthInsurance)
   patients!: Patient[];
+
+  @OneToMany(() => DoctorHealthInsurance, (dhi) => dhi.healthInsurance)
+  doctorHealthInsurances!: DoctorHealthInsurance[];
 }
