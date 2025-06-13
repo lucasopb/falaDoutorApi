@@ -10,6 +10,9 @@ export class DoctorHealthInsurance {
   @ManyToOne(() => Doctor, (doctor) => doctor.doctorHealthInsurances)
   doctor!: Doctor;
 
-  @ManyToOne(() => HealthInsurance, (healthInsurance) => healthInsurance.doctorHealthInsurances)
+  @ManyToOne(() => HealthInsurance, (healthInsurance) => healthInsurance.doctorHealthInsurances, {
+    onDelete: 'CASCADE',
+  })
   healthInsurance!: HealthInsurance;
+
 }

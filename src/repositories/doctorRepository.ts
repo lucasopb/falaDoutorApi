@@ -28,10 +28,18 @@ export const getDoctors = async (limit: number, offset: number) => {
 };
 
 export const getDoctorById = async (id: string) => {
-  const doctor = await doctorRepository.findOne({ where: { id } });
-  if (!doctor) throw new NotFoundError("Doctor not found")
+  const doctor = await doctorRepository.findOne({
+    where: { id },
+    relations: {
+      doctorHealthInsurances: {
+        healthInsurance: true
+      }
+    }
+  });
 
-  return doctor
+  if (!doctor) throw new NotFoundError("Doctor not found");
+
+  return doctor;
 };
 
 export const updateDoctor = async (
