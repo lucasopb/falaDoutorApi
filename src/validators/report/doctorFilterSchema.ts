@@ -20,6 +20,12 @@ export const doctorFilterSchema = z.object({
   ageMax: z.coerce.number({
     invalid_type_error: "'ageMax' must be a valid number.",
   }).optional(),
+
+    healthInsuranceIds: z.array(z.string({
+    invalid_type_error: "Each 'healthInsuranceId' must be a string.",
+  }), {
+    invalid_type_error: "'healthInsuranceIds' must be an array of strings.",
+  }).optional(),
 });
 
 export type DoctorFilterDTO = z.infer<typeof doctorFilterSchema>;

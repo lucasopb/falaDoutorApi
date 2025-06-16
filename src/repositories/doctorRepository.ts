@@ -70,11 +70,15 @@ export const filterDoctors = async (
     crm?: string;
     ageMin?: number;
     ageMax?: number;
-  }, 
+    healthInsuranceIds?: string[]; // IDs dos planos de saúde
+  },
   limit: number,
   offset: number
 ) => {
-  const query = doctorRepository.createQueryBuilder("doctor");
+  const query = doctorRepository
+    .createQueryBuilder("doctor")
+    .leftJoin("doctor.doctorHealthInsurances", "dhi")
+    .leftJoin("dhi.healthInsurance", "healthInsurance");
 
   if (filters.name) {
     query.andWhere("doctor.name ILIKE :name", { name: `%${filters.name}%` });
@@ -100,6 +104,12 @@ export const filterDoctors = async (
   } else if (birthdateMax) {
     query.andWhere("doctor.birthDate <= :birthdateMax", { birthdateMax });
   }
+
+if (filters.healthInsuranceIds && filters.healthInsuranceIds.length > 0) {
+  query.andWhere("healthInsurance.id IN (:...healthInsuranceIds)", {
+    healthInsuranceIds: filters.healthInsuranceIds,
+  });
+}
 
   const [data, total] = await query
     .skip(offset)
