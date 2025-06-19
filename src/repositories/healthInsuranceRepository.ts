@@ -26,6 +26,13 @@ export const getHealthInsurances = async (limit: number, offset: number) => {
   return { healthInsurances, total };
 };
 
+export const getHealthInsuranceIdByName = async (name: string): Promise<string | null> => {
+  const healthInsurance = await healthInsuranceRepository.findOneBy({ name });
+
+  return healthInsurance ? healthInsurance.id : null;
+};
+
+
 export const getHealthInsuranceById = async (id: string) => {
   const healthInsurance = await healthInsuranceRepository.findOne({ where: { id } });
   if (!healthInsurance) throw new NotFoundError("health insurance not found")
