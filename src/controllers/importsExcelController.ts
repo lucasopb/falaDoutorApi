@@ -34,5 +34,5 @@ export const importPatientsHandler = async (req: Request, res: Response) => {
   }
 
   const result = await importPatientsFromExcel(file.path);
-  res.status(201).json({ message: "Health insurances imported successfully.", result });
+  res.status(201).json({ message: "Patients insurances imported successfully.", result });
 };
