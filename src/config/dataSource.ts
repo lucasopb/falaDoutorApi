@@ -6,14 +6,17 @@ import { DoctorHealthInsurance } from "../entities/DoctorHealthInsurance";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  url: process.env.DATABASE_URL,
   synchronize: true,
   logging: false,
+  ssl: {
+    rejectUnauthorized: false, // necessário para a Render
+  },
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
   entities: [Doctor, Patient, HealthInsurance, DoctorHealthInsurance],
   migrations: ["src/migrations/**/*.ts"],
 });
-
