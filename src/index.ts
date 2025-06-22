@@ -14,9 +14,14 @@ import importRouter from "./routes/importsRouter";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3001", // Para ambiente local
+  "https://faladoutorfront.onrender.com", // ✅ Frontend em produção
+];
+
 app.use(cors({
-  origin: "http://localhost:3001",  
-  credentials: true,  
+  origin: allowedOrigins,
+  credentials: true,
 }));
 
 app.use(express.json());
