@@ -3,6 +3,7 @@ import { Doctor } from "../entities/Doctor";
 import { Patient } from "../entities/Patient";
 import { HealthInsurance } from "../entities/HealthInsurance";
 import { DoctorHealthInsurance } from "../entities/DoctorHealthInsurance";
+import { Appointment } from "../entities/Appointment";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -17,6 +18,6 @@ export const AppDataSource = new DataSource({
       rejectUnauthorized: false,
     },
   },
-  entities: [Doctor, Patient, HealthInsurance, DoctorHealthInsurance],
+  entities: [Doctor, Patient, HealthInsurance, DoctorHealthInsurance, Appointment],
   migrations: ["src/migrations/**/*.ts"],
 });
