@@ -7,6 +7,8 @@ import {
   deleteAppointment,
 } from "../repositories/appointmentRepository";
 import { BadRequestError } from "../helpers/api-erros";
+import { updateAppointmentSchema } from "../validators/appointment/updateAppointmentSchema";
+import { updateAppointment } from "../repositories/appointmentRepository";
 
 export const createAppointmentHandler = async (
   req: Request,
@@ -14,10 +16,11 @@ export const createAppointmentHandler = async (
   next: NextFunction
 ) => {
   const validated = createAppointmentSchema.safeParse(req.body);
-  console.log("ola")
   if (!validated.success) {
-    const errorMsg = validated.error.errors.map(e => e.message).join(", ");
-    throw new BadRequestError(errorMsg);
+    const errorMessages = validated.error.errors
+      .map((err: any) => err.message)
+      .join(", ");
+    throw new BadRequestError(errorMessages);
   }
 
   const { doctorId, patientId, date, observation } = validated.data;
@@ -44,4 +47,28 @@ export const getAppointmentByIdHandler = async (req: Request, res: Response) => 
 export const deleteAppointmentHandler = async (req: Request, res: Response) => {
   await deleteAppointment(req.params.id);
   res.status(204).send();
+};
+
+export const updateAppointmentHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const validated = updateAppointmentSchema.safeParse(req.body);
+
+  if (!validated.success) {
+    const errorMessages = validated.error.errors
+      .map((err: any) => err.message)
+      .join(", ");
+    throw new BadRequestError(errorMessages);
+  }
+
+  const { date, observation } = validated.data;
+
+  const updated = await updateAppointment(
+    req.params.id,
+    date ? new Date(date) : undefined,
+    observation
+  );
+
+  res.json(updated);
 };

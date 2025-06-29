@@ -2,7 +2,6 @@ import { AppDataSource } from "../config/dataSource";
 import { Appointment } from "../entities/Appointment";
 import { Doctor } from "../entities/Doctor";
 import { Patient } from "../entities/Patient";
-import { HealthInsurance } from "../entities/HealthInsurance";
 import { NotFoundError, BadRequestError } from "../helpers/api-erros";
 
 const appointmentRepository = AppDataSource.getRepository(Appointment);
@@ -47,7 +46,17 @@ export const createAppointment = async (
 };
 
 export const getAppointments = async () => {
-  return await appointmentRepository.find();
+  return await appointmentRepository.find({
+    relations: {
+      doctor: true,
+      patient: {
+        healthInsurance: true // <- adicione isso
+      }
+    },
+    order: {
+      date: "DESC",
+    }
+  });
 };
 
 export const getAppointmentById = async (id: string) => {
@@ -60,3 +69,20 @@ export const deleteAppointment = async (id: string) => {
   await getAppointmentById(id);
   return await appointmentRepository.delete(id);
 }
+
+// repositories/appointmentRepository.ts
+export const updateAppointment = async (
+  id: string,
+  date?: Date,
+  observation?: string
+) => {
+  const appointment = await appointmentRepository.findOneBy({ id });
+
+  if (!appointment) throw new NotFoundError("Appointment not found");
+
+  if (date) appointment.date = date;
+  if (typeof observation !== "undefined") appointment.observation = observation;
+
+  return await appointmentRepository.save(appointment);
+};
+
