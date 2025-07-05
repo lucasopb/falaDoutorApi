@@ -3,6 +3,7 @@ import { Appointment } from "../entities/Appointment";
 import { Doctor } from "../entities/Doctor";
 import { Patient } from "../entities/Patient";
 import { NotFoundError, BadRequestError } from "../helpers/api-erros";
+import { Between } from "typeorm";
 
 const appointmentRepository = AppDataSource.getRepository(Appointment);
 
@@ -70,7 +71,6 @@ export const deleteAppointment = async (id: string) => {
   return await appointmentRepository.delete(id);
 }
 
-// repositories/appointmentRepository.ts
 export const updateAppointment = async (
   id: string,
   date?: Date,
@@ -86,3 +86,73 @@ export const updateAppointment = async (
   return await appointmentRepository.save(appointment);
 };
 
+export const filterAppointments = async (
+  filters: {
+    doctorId?: string;
+    patientId?: string;
+    healthInsurance?: string;
+    dateMin?: Date;
+    dateMax?: Date;
+  },
+  limit: number,
+  offset: number
+  ) => {
+    const query = AppDataSource
+    .getRepository(Appointment)
+    .createQueryBuilder("appointment")
+    .leftJoinAndSelect("appointment.doctor", "doctor")
+    .leftJoinAndSelect("appointment.patient", "patient")
+    .leftJoinAndSelect("patient.healthInsurance", "healthInsurance"); // << CORREÇÃO AQUI
+
+  if (filters.doctorId) {
+    query.andWhere("doctor.id = :doctorId", { doctorId: filters.doctorId });
+  }
+
+  if (filters.patientId) {
+    query.andWhere("patient.id = :patientId", { patientId: filters.patientId });
+  }
+
+  if (filters.healthInsurance) {
+    query.andWhere("healthInsurance.name = :healthInsurance", {
+      healthInsurance: filters.healthInsurance,
+    });
+  }
+
+  if (filters.dateMin && filters.dateMax) {
+    query.andWhere("appointment.date BETWEEN :dateMin AND :dateMax", {
+      dateMin: filters.dateMin,
+      dateMax: filters.dateMax,
+    });
+  } else if (filters.dateMin) {
+    query.andWhere("appointment.date >= :dateMin", {
+      dateMin: filters.dateMin,
+    });
+  } else if (filters.dateMax) {
+    query.andWhere("appointment.date <= :dateMax", {
+      dateMax: filters.dateMax,
+    });
+  }
+
+  const [data, total] = await query
+    .skip(offset)
+    .take(limit)
+    .getManyAndCount();
+
+  return { data, total };
+};
+
+export const getTodayAppointments = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return await AppDataSource.getRepository(Appointment).find({
+    where: {
+      date: Between(today, tomorrow),
+    },
+    relations: ["doctor", "patient"],
+    order: { date: "ASC" },
+  });
+};

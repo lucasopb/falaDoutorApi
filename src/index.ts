@@ -5,12 +5,13 @@ import express from 'express';
 import doctorRouter from './routes/doctorRouter';
 import doctorHealthInsuranceRouter from './routes/doctorHealthInsuranceRouter'
 import patientRouter from './routes/patientRouter';
-import healthInsuranceRouter from './routes/HealthInsuranceRouter'
+import healthInsuranceRouter from './routes/healthInsuranceRouter'
 import { AppDataSource } from './config/dataSource';
 import { errorHandler } from './middlewares/errorHandlerMiddleware';
 import reportRouter from './routes/reportRouter'
 import importRouter from "./routes/importsRouter";
 import appointmentRouter from "./routes/appointmentsRouter"
+import notificationRouter from "./routes/notificationRouter";
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/doctor', doctorRouter);
+app.use(notificationRouter);
 app.use('/patient', patientRouter);
 app.use('/health-insurance', healthInsuranceRouter)
 app.use('/report', reportRouter)

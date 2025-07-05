@@ -5,6 +5,8 @@ import { BadRequestError } from '../helpers/api-erros';
 import { doctorFilterSchema } from '../validators/report/doctorFilterSchema';
 import { healthInsuranceFilterSchema } from '../validators/report/healthIsuranceFilterSchema';
 import { patientFilterSchema } from '../validators/report/patientFilterSchema';
+import { appointmentFilterSchema } from '../validators/report/appointmentFilterSchema';
+import { filterAppointments } from '../repositories/appointmentRepository';
 
 export async function generateReport(
   entity: string,
@@ -46,6 +48,17 @@ export async function generateReport(
       }
 
       return filterHealthInsurances(validIsuranceFilters.data, limit, offset);
+    case 'appointment':
+      const validAppointmentFilters = appointmentFilterSchema.safeParse(filters)
+
+      if (!validAppointmentFilters.success) {
+        const errorMessages = validAppointmentFilters.error.errors
+          .map((err: any) => err.message)
+          .join(", ");
+        throw new BadRequestError(errorMessages);
+      }
+
+      return filterAppointments(validAppointmentFilters.data, limit, offset);
     default:
       throw new BadRequestError('Entidade inválida');
   }
